@@ -34,3 +34,4 @@
 	"ordertype" (Bestellungstyp)
 	"receiptDate" (erwartetesEingangsdatum)
 }
+

@@ -1,7 +1,7 @@
 import Offcanvas from "react-bootstrap/Offcanvas";
 import Preview from "./Preview";
 
-const DetailsView = ({ show, handleClose, content }) => {
+const DetailsView = ({ show, handleClose, content, previewHTML }) => {
 	if (!content) {
 		return <></>;
 	}
@@ -21,44 +21,48 @@ const DetailsView = ({ show, handleClose, content }) => {
 				<p className="p-0 m-0">
 					<b>Erwartetes Eingangsdatum</b>
 				</p>
-				<p className="p-0 m-0">{content.erwartetesEingangsdatum}</p>
+				<p className="p-0 m-0">{content.receiptDate}</p>
 				<br />
 				<p className="p-0 m-0">
 					<b>Datum der letzten Reklamation</b>
 				</p>
-				<p className="p-0 m-0">{content.letzteReklamationDatum}</p>
+				<p className="p-0 m-0">{content.local_last_reminder_date}</p>
 				<br />
 				<p className="p-0 m-0">
 					<b>Anzahl Exemplare</b>
 				</p>
-				<p className="p-0 m-0">{content.anzahlExemplare}</p>
+				<p className="p-0 m-0">{content.quantity}</p>
 				<br />
 				<p className="p-0 m-0">
 					<b>Rechnungscode</b>
 				</p>
-				<p className="p-0 m-0">{content.rechnungscode}</p>
+				<p className="p-0 m-0">{content.fund}</p>
 				<br />
 				<p className="p-0 m-0">
 					<b>Kundennummer</b>
 				</p>
-				<p className="p-0 m-0">{content.kundennummer}</p>
+				<p className="p-0 m-0">{content.vendorAccount}</p>
 				<br />
 				<p className="p-0 m-0">
 					<b>Absender</b>
 				</p>
-				<p className="p-0 m-0">{content.absender}</p>
+				<p className="p-0 m-0">
+					Universitätsbibliothek Frankfurt, Medienbearbeitung - Team
+					Zeitschriften Bockenheimer Landstr. 134-138, 60325
+					Frankfurt/abo-verw@ub.uni-frankfurt.de
+				</p>
 				<br />
 				<p className="p-0 m-0">
 					<b>Produktnummer</b>
 				</p>
-				<p className="p-0 m-0">{content.produktnummer}</p>
+				<p className="p-0 m-0">{content.identifierList}</p>
 				<br />
 				<p className="p-0 m-0">
 					<b>Internal note</b>
 				</p>
 				<p className="p-0 m-0">{content.internalNote}</p>
 				<br />
-				<Preview />
+				<Preview previewHTML={previewHTML} />
 			</Offcanvas.Body>
 		</Offcanvas>
 	);

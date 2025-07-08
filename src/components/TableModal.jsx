@@ -12,8 +12,8 @@ const TableModal = ({
 	if (!unfulfilledOrders[orderIndex]) {
 		return <></>;
 	}
-	const [day, month, year] =
-		unfulfilledOrders[orderIndex]["naechsteReklamationDatum"].split(".");
+	const [year, month, day] =
+		unfulfilledOrders[orderIndex]["receiptDate"].split("-");
 	const [newDate, setNewDate] = useState(`${year}-${month}-${day}`);
 	const [newNote, setNewNote] = useState(
 		unfulfilledOrders[orderIndex]["externalNote"]
@@ -45,9 +45,6 @@ const TableModal = ({
 					</Form>
 				</Modal.Body>
 				<Modal.Footer>
-					<Button variant="secondary" onClick={handleClose}>
-						Close
-					</Button>
 					<Button
 						variant="primary"
 						onClick={() => {

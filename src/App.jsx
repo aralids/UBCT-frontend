@@ -1,6 +1,7 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useState, useRef, useEffect } from "react";
 import Button from "react-bootstrap/Button";
+import axios from "axios";
 
 import "./App.css";
 import Header from "./components/Header";
@@ -459,27 +460,24 @@ const App = () => {
 	};
 
 	const getSupplementaryData = (orderNumber) => {
-		// const supplData = callToBackend(orderNumber)
-		const supplData = {
-			orderNumber: orderNumber,
-			erwartetesEingangsdatum: "01.04.2025",
-			letzteReklamationDatum: "07.05.2025",
-			anzahlExemplare: 1,
-			rechnungscode: "U-Z",
-			kundennummer: "20150",
-			absender:
-				"Universitätsbibliothek Frankfurt, Medienbearbeitung - Team Zeitschriften Bockenheimer Landstr. 134-138, 60325 Frankfurt/abo-verw@ub.uni-frankfurt.de",
-			produktnummer: "ISSN 2942-0253",
-			internalNote: "Some text here.",
-		};
+		const supplData = unfulfilledOrdersRef.current.find(
+			(order) => order.poLineNumber === orderNumber
+		);
 		setDetailsViewContent(supplData);
 		setDetailsViewOrderNumber(orderNumber);
 	};
 
+	const getPreviewHTML = async (orderNumber) => {
+		const response = await axios.get(
+			`http://0.0.0.0:9000/preview/${orderNumber}`
+		);
+		setPreviewHTML(response.data);
+	};
+
+	const [previewHTML, setPreviewHTML] = useState("<html></html>");
+
 	const [detailsViewContent, setDetailsViewContent] = useState(null);
 	const [detailsViewOrderNumber, setDetailsViewOrderNumber] = useState(null);
-
-	console.log("App orderindex: ", modalOrderIndex);
 
 	const [warningModalContent, setWarningModalContent] = useState(null);
 
@@ -491,10 +489,16 @@ const App = () => {
 		event.returnValue = true;
 	};
 
-	useEffect(
-		() => window.addEventListener("beforeunload", beforeUnloadHandler),
-		[]
-	);
+	const fetchPieces = async () => {
+		const response = await axios.get("http://0.0.0.0:9000/pieces");
+		const pieces = response.data;
+		setUnfulfilledOrders(pieces);
+	};
+
+	useEffect(() => {
+		window.addEventListener("beforeunload", beforeUnloadHandler);
+		fetchPieces();
+	}, []);
 
 	return (
 		<div
@@ -519,9 +523,10 @@ const App = () => {
 					setModalOrderIndex(orderIndex);
 				}}
 				handleReclaimAgainChange={handleReclaimAgainChange}
-				handleShowDetailsView={(orderNumber) =>
-					getSupplementaryData(orderNumber)
-				}
+				handleShowDetailsView={(orderNumber) => {
+					getSupplementaryData(orderNumber);
+					getPreviewHTML(orderNumber);
+				}}
 				detailsViewContent={detailsViewContent}
 				detailsViewOrderNumber={detailsViewOrderNumber}
 				showLessColumns={detailsViewContent}
@@ -533,6 +538,7 @@ const App = () => {
 					setDetailsViewOrderNumber(null);
 				}}
 				content={detailsViewContent}
+				previewHTML={previewHTML}
 			/>
 			<TableModal
 				show={Boolean(modalOrderIndex >= 0)}

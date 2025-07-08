@@ -17,6 +17,7 @@ const Body = ({
 	detailsViewOrderNumber,
 	showLessColumns,
 }) => {
+	console.log("uO: ", unfulfilledOrders, typeof unfulfilledOrders);
 	const [currPage, setCurrPage] = useState(1);
 	const totalPageNumber = parseInt(
 		Math.ceil(unfulfilledOrders.length / ORDERS_PER_PAGE)

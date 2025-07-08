@@ -61,13 +61,13 @@ const OrdersTable = ({
 					{...unfulfilledOrders.map((order, index) => (
 						<tr
 							className={
-								detailsViewOrderNumber === order.Bestellnummer
+								detailsViewOrderNumber === order.poLineNumber
 									? "table-primary"
 									: ""
 							}
 							onContextMenu={(e) => {
 								e.preventDefault();
-								handleShowDetailsView(order.Bestellnummer);
+								handleShowDetailsView(order.poLineNumber);
 							}}
 						>
 							<td>
@@ -80,8 +80,8 @@ const OrdersTable = ({
 									}}
 								/>
 							</td>
-							<td>{order.Erwerbungsteam}</td>
-							<td>{order.Lieferant}</td>
+							<td>{order.acqUnitName}</td>
+							<td>{order.vendorName}</td>
 							<td
 								style={{ cursor: "pointer" }}
 								onClick={() =>
@@ -91,16 +91,16 @@ const OrdersTable = ({
 									)
 								}
 							>
-								{order.Bestellnummer}
+								{order.poLineNumber}
 							</td>
-							<td>{order.orderType}</td>
-							<td>{order.Mahnstufe}</td>
+							<td>{order.ordertype}</td>
+							<td>{order.local_claiming_level}</td>
 							{showLessColumns ? (
 								<></>
 							) : (
 								<>
-									<td>{order.DisplaySummary}</td>
-									<td>{order.Kurztitel}</td>
+									<td>{order.displaySummary}</td>
+									<td>{order.title}</td>
 								</>
 							)}
 						</tr>
