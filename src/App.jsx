@@ -469,7 +469,7 @@ const App = () => {
 
 	const getPreviewHTML = async (orderNumber) => {
 		const response = await axios.get(
-			`http://0.0.0.0:9000/preview/${orderNumber}`
+			`http://0.0.0.0:8000/preview/${orderNumber}`
 		);
 		setPreviewHTML(response.data);
 	};
@@ -490,7 +490,7 @@ const App = () => {
 	};
 
 	const fetchPieces = async () => {
-		const response = await axios.get("http://0.0.0.0:9000/pieces");
+		const response = await axios.get("http://0.0.0.0:8000/pieces");
 		const pieces = response.data;
 		setUnfulfilledOrders(pieces);
 	};
