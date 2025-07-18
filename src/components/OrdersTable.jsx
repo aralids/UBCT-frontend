@@ -84,12 +84,7 @@ const OrdersTable = ({
 							<td>{order.vendorName}</td>
 							<td
 								style={{ cursor: "pointer" }}
-								onClick={() =>
-									window.open(
-										"https://iln003-alt.k8s-development.hebis-services.de/receiving/aeb98268-286e-455f-acd1-5b7775350a9d/view",
-										"_blank"
-									)
-								}
+								onClick={() => window.open(order["title_link"], "_blank")}
 							>
 								{order.poLineNumber}
 							</td>
