@@ -4,23 +4,83 @@ import Form from "react-bootstrap/Form";
 import { useState } from "react";
 const TableModal = ({
 	show,
-	handleClose,
-	unfulfilledOrders,
-	orderIndex,
-	handleReclaimAgainChange,
+	modalPiece,
+	setModalPiece,
+	modalConfirmChangesMode,
+	setModalConfirmChangesMode,
+	handleUncheckPiece,
+	sendEmail,
 }) => {
-	if (!unfulfilledOrders[orderIndex]) {
+	if (!modalPiece) {
 		return <></>;
 	}
-	const [year, month, day] =
-		unfulfilledOrders[orderIndex]["receiptDate"].split("-");
+
+	const zeroPad = (num) => {
+		return String(num).padStart(2, "0");
+	};
+
+	let newReclamationDate = new Date();
+	const daysToAdd = modalPiece["claimingInterval"];
+	newReclamationDate.setDate(newReclamationDate.getDate() + daysToAdd);
+	const day = zeroPad(newReclamationDate.getDate());
+	const month = zeroPad(newReclamationDate.getMonth() + 1); // months are 0-based
+	const year = newReclamationDate.getFullYear();
 	const [newDate, setNewDate] = useState(`${year}-${month}-${day}`);
 	const [newNote, setNewNote] = useState(
-		unfulfilledOrders[orderIndex]["externalNote"]
+		modalPiece["newNote"] ?? modalPiece["externalNote"]
 	);
+
+	if (modalConfirmChangesMode) {
+		return (
+			<>
+				<Modal
+					show={show}
+					onHide={() => {
+						setModalConfirmChangesMode(false);
+					}}
+				>
+					<Modal.Header closeButton>
+						<Modal.Title>Are you sure you want to save changes?</Modal.Title>
+					</Modal.Header>
+					<Modal.Footer>
+						<Button
+							variant="primary"
+							onClick={() => {
+								setModalConfirmChangesMode(false);
+							}}
+						>
+							No
+						</Button>
+						<Button
+							variant="primary"
+							onClick={() => {
+								//TODO: Make the following statement asynchronous.
+								sendEmail({
+									...modalPiece,
+									newNote: newNote,
+									newDate: newDate,
+								});
+								setModalPiece(null);
+								setModalConfirmChangesMode(false);
+							}}
+						>
+							Yes
+						</Button>
+					</Modal.Footer>
+				</Modal>
+			</>
+		);
+	}
+
 	return (
 		<>
-			<Modal show={show} onHide={handleClose}>
+			<Modal
+				show={show}
+				onHide={() => {
+					handleUncheckPiece(modalPiece);
+					setModalPiece(null);
+				}}
+			>
 				<Modal.Header closeButton>
 					<Modal.Title>Nächste Reklamation</Modal.Title>
 				</Modal.Header>
@@ -30,7 +90,7 @@ const TableModal = ({
 							<Form.Label>Neues Datum eingeben: </Form.Label>
 							<Form.Control
 								type="date"
-								defaultValue={`${year}-${month}-${day}`}
+								defaultValue={newDate}
 								onChange={({ target }) => setNewDate(target.value)}
 							/>
 						</Form.Group>
@@ -48,11 +108,25 @@ const TableModal = ({
 					<Button
 						variant="primary"
 						onClick={() => {
-							handleReclaimAgainChange(orderIndex, newNote, newDate);
-							handleClose();
+							//TODO: Make the following statement asynchronous.
+							handleUncheckPiece(modalPiece);
+							setModalPiece(null);
 						}}
 					>
-						Änderungen speichern
+						Abbrechen
+					</Button>
+					<Button
+						variant="primary"
+						onClick={() => {
+							setModalPiece({
+								...modalPiece,
+								newNote: newNote,
+								newDate: newDate,
+							});
+							setModalConfirmChangesMode(true);
+						}}
+					>
+						Speichern & Senden
 					</Button>
 				</Modal.Footer>
 			</Modal>

@@ -1,10 +1,21 @@
 import Offcanvas from "react-bootstrap/Offcanvas";
 import Preview from "./Preview";
+import Table from "react-bootstrap/Table";
 
-const DetailsView = ({ show, handleClose, content, previewHTML }) => {
-	if (!content) {
+const DetailsView = ({ show, handleClose, detailsViewPiece, previewHTML }) => {
+	if (!detailsViewPiece) {
 		return <></>;
 	}
+
+	const renderIdentifier = (identifierList) => {
+		if (!Array.isArray(identifierList) || identifierList.length === 0) {
+			return "—"; // Show dash if list is empty or not an array
+		}
+
+		const { productIdType, productId } = identifierList[0];
+		return `${productIdType ?? "?"} ${productId ?? "?"}`;
+	};
+
 	return (
 		<Offcanvas
 			style={{ width: "40vw" }}
@@ -18,50 +29,56 @@ const DetailsView = ({ show, handleClose, content, previewHTML }) => {
 				<Offcanvas.Title>Detailansicht</Offcanvas.Title>
 			</Offcanvas.Header>
 			<Offcanvas.Body>
-				<p className="p-0 m-0">
-					<b>Erwartetes Eingangsdatum</b>
-				</p>
-				<p className="p-0 m-0">{content.receiptDate}</p>
-				<br />
-				<p className="p-0 m-0">
-					<b>Datum der letzten Reklamation</b>
-				</p>
-				<p className="p-0 m-0">{content.local_last_reminder_date}</p>
-				<br />
-				<p className="p-0 m-0">
-					<b>Anzahl Exemplare</b>
-				</p>
-				<p className="p-0 m-0">{content.quantity}</p>
-				<br />
-				<p className="p-0 m-0">
-					<b>Rechnungscode</b>
-				</p>
-				<p className="p-0 m-0">{content.fund}</p>
-				<br />
-				<p className="p-0 m-0">
-					<b>Kundennummer</b>
-				</p>
-				<p className="p-0 m-0">{content.vendorAccount}</p>
-				<br />
-				<p className="p-0 m-0">
-					<b>Absender</b>
-				</p>
-				<p className="p-0 m-0">
-					Universitätsbibliothek Frankfurt, Medienbearbeitung - Team
-					Zeitschriften Bockenheimer Landstr. 134-138, 60325
-					Frankfurt/abo-verw@ub.uni-frankfurt.de
-				</p>
-				<br />
-				<p className="p-0 m-0">
-					<b>Produktnummer</b>
-				</p>
-				<p className="p-0 m-0">{content.identifierList}</p>
-				<br />
-				<p className="p-0 m-0">
-					<b>Internal note</b>
-				</p>
-				<p className="p-0 m-0">{content.internalNote}</p>
-				<br />
+				<Table bordered>
+					<tbody>
+						<tr>
+							<th>Erwartetes Eingangsdatum</th>
+							<td>{detailsViewPiece.receiptDate ?? "—"}</td>
+						</tr>
+						<tr>
+							<th>Datum der letzten Reklamation</th>
+							<td>{detailsViewPiece.local_last_reminder_date ?? "—"}</td>
+						</tr>
+						<tr>
+							<th>Anzahl Exemplare</th>
+							<td>{detailsViewPiece.quantity ?? "—"}</td>
+						</tr>
+						<tr>
+							<th>Rechnungscode</th>
+							<td>{detailsViewPiece.fund ?? "—"}</td>
+						</tr>
+						<tr>
+							<th>Kundennummer</th>
+							<td>{detailsViewPiece.vendorAccount ?? "—"}</td>
+						</tr>
+						<tr>
+							<th>Absender</th>
+							<td>
+								{detailsViewPiece.shipTo ? (
+									detailsViewPiece.shipTo
+										.filter((addr) => addr.trim() !== "") // filter out empty lines
+										.map((addr, index, arr) => (
+											<span key={index}>
+												{addr}
+												{index < arr.length - 1 && ","}
+												<br />
+											</span>
+										))
+								) : (
+									<></>
+								)}
+							</td>
+						</tr>
+						<tr>
+							<th>Produktnummer</th>
+							<td>{renderIdentifier(detailsViewPiece.identifierList)}</td>
+						</tr>
+						<tr>
+							<th>Internal note</th>
+							<td>{detailsViewPiece.internalNote ?? "—"}</td>
+						</tr>
+					</tbody>
+				</Table>
 				<Preview previewHTML={previewHTML} />
 			</Offcanvas.Body>
 		</Offcanvas>

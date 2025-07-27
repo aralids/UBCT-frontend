@@ -1,6 +1,6 @@
 import Pagination from "react-bootstrap/Pagination";
 
-const OrderPagination = ({ currPage, setCurrPage, totalPageNumber }) => {
+const PiecePagination = ({ currPage, setCurrPage, totalPageNumber }) => {
 	let pagesBeforeActive = <></>;
 	if (currPage === 2) {
 		pagesBeforeActive = (
@@ -86,4 +86,4 @@ const OrderPagination = ({ currPage, setCurrPage, totalPageNumber }) => {
 	);
 };
 
-export default OrderPagination;
+export default PiecePagination;
