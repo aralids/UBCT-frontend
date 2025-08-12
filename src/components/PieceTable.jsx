@@ -8,6 +8,7 @@ const PieceTable = ({
 	handleOpenModal,
 	handleOpenDetailsView,
 	detailsViewPiece,
+	setFilter,
 }) => {
 	const columnList = detailsViewPiece
 		? [
@@ -54,9 +55,20 @@ const PieceTable = ({
 								style={{
 									cursor: "pointer",
 								}}
-								onClick={() => handleSort(piecePropertyList[index])}
+								onClick={
+									item !== "Erwerbungsteam"
+										? () => handleSort(piecePropertyList[index])
+										: () => {}
+								}
 							>
-								<div className="d-flex">
+								<div
+									className="d-flex"
+									onClick={
+										item === "Erwerbungsteam"
+											? () => handleSort(piecePropertyList[index])
+											: () => {}
+									}
+								>
 									{item}
 									{sortingSettings.field === piecePropertyList[index] ? (
 										sortingSettings.order === "asc" ? (
@@ -72,6 +84,25 @@ const PieceTable = ({
 										<></>
 									)}
 								</div>
+								{item === "Erwerbungsteam" ? (
+									<Form.Group className="mb-3">
+										<Form.Control
+											type="text"
+											defaultValue={""}
+											onChange={({ target }) => {
+												setFilter(target.value);
+											}}
+										/>
+									</Form.Group>
+								) : (
+									<Form.Group className="mb-3" style={{ opacity: 0 }}>
+										<Form.Control
+											type="text"
+											defaultValue={""}
+											style={{ cursor: "pointer" }}
+										/>
+									</Form.Group>
+								)}
 							</th>
 						))}
 					</tr>
@@ -82,6 +113,8 @@ const PieceTable = ({
 							className={
 								detailsViewPiece && detailsViewPiece.pieceId === piece.pieceId
 									? "table-primary"
+									: piece.reclaimAgain === true
+									? "table-danger"
 									: ""
 							}
 							onContextMenu={(e) => {
@@ -91,7 +124,7 @@ const PieceTable = ({
 						>
 							<td>
 								<Form.Check
-									checked={piece.reclaimAgain}
+									checked={piece.reclaimAgain === true}
 									onChange={({ target }) => {
 										if (target.checked) {
 											handleOpenModal(piece);

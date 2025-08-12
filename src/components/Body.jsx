@@ -11,6 +11,7 @@ const Body = ({
 	handleOpenModal,
 	handleOpenDetailsView,
 	detailsViewPiece,
+	setFilter,
 }) => {
 	const [currPage, setCurrPage] = useState(1);
 	const totalPageNumber = parseInt(
@@ -39,6 +40,7 @@ const Body = ({
 					handleOpenModal={handleOpenModal}
 					handleOpenDetailsView={handleOpenDetailsView}
 					detailsViewPiece={detailsViewPiece}
+					setFilter={setFilter}
 				/>
 				<PiecePagination
 					currPage={currPage}

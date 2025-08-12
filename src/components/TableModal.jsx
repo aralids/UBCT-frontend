@@ -30,29 +30,43 @@ const TableModal = ({
 		modalPiece["newNote"] ?? modalPiece["externalNote"]
 	);
 
+	let tomorrow = new Date();
+	tomorrow.setDate(tomorrow.getDate() + 1);
+	const tomorrowDay = zeroPad(tomorrow.getDate());
+	const tomorrowMonth = zeroPad(tomorrow.getMonth() + 1); // months are 0-based
+	const tomorrowYear = tomorrow.getFullYear();
+	const tomorrowFormatted = `${tomorrowYear}-${tomorrowMonth}-${tomorrowDay}`;
+
 	if (modalConfirmChangesMode) {
 		return (
 			<>
-				<Modal
-					show={show}
-					onHide={() => {
-						setModalConfirmChangesMode(false);
-					}}
-				>
-					<Modal.Header closeButton>
-						<Modal.Title>Are you sure you want to save changes?</Modal.Title>
+				<Modal show={show}>
+					<Modal.Header>
+						<Modal.Title>
+							Möchten Sie die Änderungen wirklich speichern und eine E-Mail an
+							den Lieferanten senden?
+						</Modal.Title>
 					</Modal.Header>
+					<Modal.Body>
+						Bestellnummer: {modalPiece.poLineNumber}
+						<br />
+						DisplaySummary: {modalPiece.displaySummary}
+						<br />
+						<br />
+					</Modal.Body>
 					<Modal.Footer>
 						<Button
+							style={{ width: 100 }}
 							variant="primary"
 							onClick={() => {
 								setModalConfirmChangesMode(false);
 							}}
 						>
-							No
+							Nein
 						</Button>
 						<Button
 							variant="primary"
+							style={{ width: 100 }}
 							onClick={() => {
 								//TODO: Make the following statement asynchronous.
 								sendEmail({
@@ -64,7 +78,7 @@ const TableModal = ({
 								setModalConfirmChangesMode(false);
 							}}
 						>
-							Yes
+							Ja
 						</Button>
 					</Modal.Footer>
 				</Modal>
@@ -85,11 +99,17 @@ const TableModal = ({
 					<Modal.Title>Nächste Reklamation</Modal.Title>
 				</Modal.Header>
 				<Modal.Body>
+					Bestellnummer: {modalPiece.poLineNumber}
+					<br />
+					DisplaySummary: {modalPiece.displaySummary}
+					<br />
+					<br />
 					<Form>
 						<Form.Group className="mb-3">
 							<Form.Label>Neues Datum eingeben: </Form.Label>
 							<Form.Control
 								type="date"
+								min={tomorrowFormatted}
 								defaultValue={newDate}
 								onChange={({ target }) => setNewDate(target.value)}
 							/>

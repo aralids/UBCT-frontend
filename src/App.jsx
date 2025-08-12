@@ -26,6 +26,14 @@ const App = () => {
 
 	const [previewHTML, setPreviewHTML] = useState("<html></html>");
 
+	const [filter, setFilter] = useState("");
+	const filterRef = useRef({ current: filter });
+	filterRef.current = filter;
+
+	const [filteredPieces, setFilteredPieces] = useState([]);
+	const filteredPiecesRef = useRef({ current: filteredPieces });
+	filteredPiecesRef.current = filteredPieces;
+
 	const sortBy = (field, order) => {
 		const currPieces = unreceivedPiecesRef.current;
 		if (order === "asc") {
@@ -119,6 +127,16 @@ const App = () => {
 		const response = await axios.get("/api/pieces");
 		const pieces = response.data;
 		setUnreceivedPieces(pieces);
+		setFilteredPieces(pieces);
+	};
+
+	const applyFilter = () => {
+		const currPieces = JSON.parse(JSON.stringify(unreceivedPiecesRef.current));
+		const modifiedPieces = currPieces.filter(
+			(piece) =>
+				piece.acqUnitName && piece.acqUnitName.includes(filterRef.current)
+		);
+		setFilteredPieces(modifiedPieces);
 	};
 
 	useEffect(() => sortBy(sortingSettings.field, sortingSettings.order), []);
@@ -127,6 +145,8 @@ const App = () => {
 		window.addEventListener("beforeunload", beforeUnloadHandler);
 		fetchPieces();
 	}, []);
+
+	useEffect(() => applyFilter(), [filter, unreceivedPieces]);
 
 	return (
 		<div
@@ -139,7 +159,7 @@ const App = () => {
 			{unreceivedPieces.length ? (
 				<>
 					<Body
-						unreceivedPieces={unreceivedPieces}
+						unreceivedPieces={filteredPieces}
 						handleSort={handleSort}
 						sortingSettings={sortingSettings}
 						handleOpenModal={(piece) => {
@@ -152,6 +172,7 @@ const App = () => {
 							getPreviewHTML(piece.pieceId);
 						}}
 						detailsViewPiece={detailsViewPiece}
+						setFilter={setFilter}
 					/>
 					<DetailsView
 						show={detailsViewPiece}
