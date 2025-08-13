@@ -6,6 +6,16 @@ import "./App.css";
 import Body from "./components/Body";
 import TableModal from "./components/TableModal";
 import DetailsView from "./components/DetailsView";
+import {
+	fetchPieces,
+	getPreviewHTML,
+	sendEmail,
+} from "./services/pieceService";
+import {
+	togglePieceFlag,
+	filterPiecesByAcqUnit,
+	sortPiecesBy,
+} from "./utils/listHelpers";
 
 const App = () => {
 	const [unreceivedPieces, setUnreceivedPieces] = useState([]);
@@ -34,119 +44,102 @@ const App = () => {
 	const filteredPiecesRef = useRef({ current: filteredPieces });
 	filteredPiecesRef.current = filteredPieces;
 
-	const sortBy = (field, order) => {
-		const currPieces = unreceivedPiecesRef.current;
-		if (order === "asc") {
-			currPieces.sort((a, b) => {
-				a[field] = a[field] ?? "";
-				b[field] = b[field] ?? "";
-				return String(a[field]).localeCompare(String(b[field]));
-			});
-		} else if (order === "desc") {
-			currPieces.sort((a, b) => {
-				a[field] = a[field] ?? "";
-				b[field] = b[field] ?? "";
-				return String(b[field]).localeCompare(String(a[field]));
-			});
-		}
+	/**
+	 * Handles toggling the reclaimAgain flag for a given piece and updates state accordingly.
+	 *
+	 * @param {Object} piece - The piece object whose flag should be toggled.
+	 * @param {boolean} isChecked - Whether the flag should be set to true or false.
+	 */
+	const handleTogglePieceFlag = (piece, isChecked) => {
+		// Update array with all pieces.
+		const newUnreceivedPieces = togglePieceFlag(
+			unreceivedPiecesRef.current,
+			piece.pieceId,
+			isChecked
+		);
+		setUnreceivedPieces(newUnreceivedPieces);
 
-		setUnreceivedPieces(currPieces);
-		setSortingSettings({ field: field, order: order });
+		// Update array with currently shown pieces.
+		let newFilteredPieces = filterPiecesByAcqUnit(
+			newUnreceivedPieces,
+			filterRef.current
+		);
+		newFilteredPieces = sortPiecesBy(
+			newFilteredPieces,
+			sortingSettingsRef.current.field,
+			sortingSettingsRef.current.order
+		);
+		setFilteredPieces(newFilteredPieces);
+
+		// Show modal.
+		setModalPiece(piece);
 	};
 
-	const handleSort = (field) => {
+	/**
+	 * Handles changes to the acquisition unit filter input.
+	 * Updates the filter state and applies filtering to the pieces.
+	 *
+	 * @param {string} newFilter - The new filter string entered by the user.
+	 */
+	const handleFilterChange = (newFilter) => {
+		const filtered = filterPiecesByAcqUnit(
+			unreceivedPiecesRef.current,
+			newFilter
+		);
+
+		setFilteredPieces(filtered);
+		setFilter(newFilter);
+	};
+
+	/**
+	 * Handles sorting of unreceived pieces by a specified field.
+	 * Toggles between ascending and descending order if the same field is clicked again.
+	 *
+	 * @param {string} field - The key in the piece objects to sort by.
+	 *
+	 * @example
+	 * // Sorts by 'title' ascending
+	 * handleSortPieces('title');
+	 *
+	 * @example
+	 * // Sorts by 'title' descending if 'title' is already the current sort field
+	 * handleSortPieces('title');
+	 */
+	const handleSortPieces = (field) => {
+		// Determine the new sort order
+		let newOrder = "asc";
 		if (field === sortingSettingsRef.current.field) {
-			if (sortingSettingsRef.current.order === "asc") {
-				sortBy(field, "desc");
-			} else if (sortingSettingsRef.current.order === "desc") {
-				sortBy(field, "asc");
-			}
-		} else {
-			sortBy(field, "asc");
+			newOrder = sortingSettingsRef.current.order === "asc" ? "desc" : "asc";
 		}
+
+		// Sort using listHelpers function
+		const sorted = sortPiecesBy(filteredPiecesRef.current, field, newOrder);
+
+		// Update state
+		setFilteredPieces(sorted);
+		setSortingSettings({ field, order: newOrder });
 	};
 
-	const handleCheckPiece = (piece) => {
-		const currPieces = JSON.parse(JSON.stringify(unreceivedPiecesRef.current));
-		const pieceIndex = currPieces.findIndex(
-			(item) => item.pieceId === piece.pieceId
-		);
-		let modifiedPiece = currPieces[pieceIndex];
-		modifiedPiece.reclaimAgain = true;
-		currPieces[pieceIndex] = modifiedPiece;
-		setUnreceivedPieces(currPieces);
-		setModalPiece(piece);
+	const handleSendEmail = async (piece) => {
+		await sendEmail(piece);
 	};
 
-	const handleUncheckPiece = (piece) => {
-		const currPieces = JSON.parse(JSON.stringify(unreceivedPiecesRef.current));
-		const pieceIndex = currPieces.findIndex(
-			(item) => item.pieceId === piece.pieceId
-		);
-		let modifiedPiece = currPieces[pieceIndex];
-		modifiedPiece.reclaimAgain = false;
-		currPieces[pieceIndex] = modifiedPiece;
-		setUnreceivedPieces(currPieces);
-		setModalPiece(piece);
-	};
-
-	const sendEmail = async (piece) => {
-		const pieceObj = {
-			pieceId: piece.pieceId,
-			newDate: piece.newDate,
-			externalNote: piece.newNote,
-		};
-
-		try {
-			const response = await axios.post("/api/send-email-json", pieceObj, {
-				headers: {
-					"Content-Type": "application/json",
-				},
-			});
-
-			console.log("Response:", response.data);
-		} catch (error) {
-			console.error("Request failed:", error);
-		}
-	};
-
-	const getPreviewHTML = async (pieceId) => {
-		const response = await axios.get(`/api/preview/${pieceId}`, {
-			responseType: "text",
-		});
-		const rawHtml = JSON.parse(response.data);
-		setPreviewHTML(rawHtml);
-	};
-
-	const beforeUnloadHandler = (event) => {
-		event.preventDefault(); // Recommended
-		event.returnValue = true; // Included for legacy support, e.g. Chrome/Edge < 119
-	};
-
-	const fetchPieces = async () => {
-		const response = await axios.get("/api/pieces");
-		const pieces = response.data;
+	const handleFetchPieces = async () => {
+		const pieces = await fetchPieces();
 		setUnreceivedPieces(pieces);
-		setFilteredPieces(pieces);
-	};
-
-	const applyFilter = () => {
-		const currPieces = JSON.parse(JSON.stringify(unreceivedPiecesRef.current));
-		const modifiedPieces = currPieces.filter(
-			(piece) =>
-				piece.acqUnitName && piece.acqUnitName.includes(filterRef.current)
+		setFilteredPieces(
+			sortPiecesBy(pieces, sortingSettings.field, sortingSettings.order)
 		);
-		setFilteredPieces(modifiedPieces);
 	};
 
-	useEffect(() => sortBy(sortingSettings.field, sortingSettings.order), []);
+	const handleFetchPreviewHTML = async (pieceId) => {
+		const previewData = await getPreviewHTML(pieceId);
+		setPreviewHTML(previewData);
+	};
 
 	useEffect(() => {
-		window.addEventListener("beforeunload", beforeUnloadHandler);
-		fetchPieces();
+		handleFetchPieces();
 	}, []);
-
-	useEffect(() => applyFilter(), [filter, unreceivedPieces]);
 
 	return (
 		<div
@@ -160,19 +153,19 @@ const App = () => {
 				<>
 					<Body
 						unreceivedPieces={filteredPieces}
-						handleSort={handleSort}
+						handleSort={handleSortPieces}
 						sortingSettings={sortingSettings}
 						handleOpenModal={(piece) => {
-							handleCheckPiece(piece);
+							handleTogglePieceFlag(piece, true);
 							setModalPiece(piece);
 						}}
 						handleOpenDetailsView={(piece) => {
 							setPreviewHTML("<html></html>");
 							setDetailsViewPiece(piece);
-							getPreviewHTML(piece.pieceId);
+							handleFetchPreviewHTML(piece.pieceId);
 						}}
 						detailsViewPiece={detailsViewPiece}
-						setFilter={setFilter}
+						setFilter={handleFilterChange}
 					/>
 					<DetailsView
 						show={detailsViewPiece}
@@ -189,8 +182,8 @@ const App = () => {
 						setModalPiece={setModalPiece}
 						modalConfirmChangesMode={modalConfirmChangesMode}
 						setModalConfirmChangesMode={setModalConfirmChangesMode}
-						handleUncheckPiece={handleUncheckPiece}
-						sendEmail={sendEmail}
+						handleUncheckPiece={(piece) => handleTogglePieceFlag(piece, false)}
+						sendEmail={handleSendEmail}
 					/>
 					<div
 						className="d-flex justify-content-between"

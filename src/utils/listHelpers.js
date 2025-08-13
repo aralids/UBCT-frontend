@@ -10,7 +10,7 @@
  * @returns {Array<Object>} A new array with the updated piece.
  */
 const togglePieceFlag = (pieces, pieceId, isChecked) => {
-	const currPieces = structuredClone(pieces);
+	const currPieces = JSON.parse(JSON.stringify(pieces));
 	const pieceIndex = currPieces.findIndex((p) => p.pieceId === pieceId);
 
 	if (pieceIndex === -1) return currPieces;
