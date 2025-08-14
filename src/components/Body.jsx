@@ -3,19 +3,14 @@ import { useState } from "react";
 import PieceTable from "./PieceTable";
 import PiecePagination from "./PiecePagination";
 import { PIECES_PER_PAGE } from "../utils/config";
+import { usePiecesContext } from "../context/PiecesContext";
 
-const Body = ({
-	unreceivedPieces,
-	handleSort,
-	sortingSettings,
-	handleOpenModal,
-	handleOpenDetailsView,
-	detailsViewPiece,
-	setFilter,
-}) => {
+const Body = () => {
+	const { filteredPieces, detailsViewPiece } = usePiecesContext();
+
 	const [currPage, setCurrPage] = useState(1);
 	const totalPageNumber = parseInt(
-		Math.ceil(unreceivedPieces.length / PIECES_PER_PAGE)
+		Math.ceil(filteredPieces.length / PIECES_PER_PAGE)
 	);
 	return (
 		<>
@@ -31,16 +26,10 @@ const Body = ({
 				}}
 			>
 				<PieceTable
-					unreceivedPieces={unreceivedPieces.slice(
+					unreceivedPieces={filteredPieces.slice(
 						(currPage - 1) * PIECES_PER_PAGE,
 						currPage * PIECES_PER_PAGE
 					)}
-					handleSort={handleSort}
-					sortingSettings={sortingSettings}
-					handleOpenModal={handleOpenModal}
-					handleOpenDetailsView={handleOpenDetailsView}
-					detailsViewPiece={detailsViewPiece}
-					setFilter={setFilter}
 				/>
 				<PiecePagination
 					currPage={currPage}

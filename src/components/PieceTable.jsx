@@ -1,15 +1,17 @@
 import Table from "react-bootstrap/Table";
 import { Form } from "react-bootstrap";
+import { usePiecesContext } from "../context/PiecesContext";
 
-const PieceTable = ({
-	unreceivedPieces,
-	handleSort,
-	sortingSettings,
-	handleOpenModal,
-	handleOpenDetailsView,
-	detailsViewPiece,
-	setFilter,
-}) => {
+const PieceTable = () => {
+	const {
+		filteredPieces,
+		handleSortPieces,
+		sortingSettings,
+		handleTogglePieceFlag,
+		handleOpenDetailsView,
+		detailsViewPiece,
+		handleFilterChange,
+	} = usePiecesContext();
 	const columnList = detailsViewPiece
 		? [
 				"Erwerbungsteam",
@@ -57,7 +59,7 @@ const PieceTable = ({
 								}}
 								onClick={
 									item !== "Erwerbungsteam"
-										? () => handleSort(piecePropertyList[index])
+										? () => handleSortPieces(piecePropertyList[index])
 										: () => {}
 								}
 							>
@@ -65,7 +67,7 @@ const PieceTable = ({
 									className="d-flex"
 									onClick={
 										item === "Erwerbungsteam"
-											? () => handleSort(piecePropertyList[index])
+											? () => handleSortPieces(piecePropertyList[index])
 											: () => {}
 									}
 								>
@@ -90,7 +92,7 @@ const PieceTable = ({
 											type="text"
 											defaultValue={""}
 											onChange={({ target }) => {
-												setFilter(target.value);
+												handleFilterChange(target.value);
 											}}
 										/>
 									</Form.Group>
@@ -108,7 +110,7 @@ const PieceTable = ({
 					</tr>
 				</thead>
 				<tbody>
-					{...unreceivedPieces.map((piece) => (
+					{...filteredPieces.map((piece) => (
 						<tr
 							className={
 								detailsViewPiece && detailsViewPiece.pieceId === piece.pieceId
@@ -127,7 +129,7 @@ const PieceTable = ({
 									checked={piece.reclaimAgain === true}
 									onChange={({ target }) => {
 										if (target.checked) {
-											handleOpenModal(piece);
+											handleTogglePieceFlag(piece, true);
 										}
 									}}
 								/>

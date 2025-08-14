@@ -1,6 +1,5 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useState, useRef, useEffect } from "react";
-import axios from "axios";
 
 import "./App.css";
 import Body from "./components/Body";
@@ -16,6 +15,8 @@ import {
 	filterPiecesByAcqUnit,
 	sortPiecesBy,
 } from "./utils/listHelpers";
+
+import { PiecesContext } from "./context/PiecesContext";
 
 const App = () => {
 	const [unreceivedPieces, setUnreceivedPieces] = useState([]);
@@ -137,78 +138,90 @@ const App = () => {
 		setPreviewHTML(previewData);
 	};
 
+	const handleOpenDetailsView = (piece) => {
+		setPreviewHTML("<html></html>");
+		setDetailsViewPiece(piece);
+		handleFetchPreviewHTML(piece.pieceId);
+	};
+
 	useEffect(() => {
 		handleFetchPieces();
 	}, []);
 
 	return (
-		<div
-			className={
-				detailsViewPiece
-					? "d-flex flex-column align-items-start gradient-background"
-					: "d-flex flex-column align-items-center gradient-background"
-			}
+		<PiecesContext.Provider
+			value={{
+				filteredPieces,
+				handleSortPieces,
+				sortingSettings,
+				handleTogglePieceFlag,
+				handleOpenDetailsView,
+				detailsViewPiece,
+				handleFilterChange,
+				setDetailsViewPiece,
+				previewHTML,
+				modalPiece,
+				setModalPiece,
+				modalConfirmChangesMode,
+				setModalConfirmChangesMode,
+				handleSendEmail,
+			}}
 		>
-			{unreceivedPieces.length ? (
-				<>
-					<Body
-						unreceivedPieces={filteredPieces}
-						handleSort={handleSortPieces}
-						sortingSettings={sortingSettings}
-						handleOpenModal={(piece) => {
-							handleTogglePieceFlag(piece, true);
-							setModalPiece(piece);
-						}}
-						handleOpenDetailsView={(piece) => {
-							setPreviewHTML("<html></html>");
-							setDetailsViewPiece(piece);
-							handleFetchPreviewHTML(piece.pieceId);
-						}}
-						detailsViewPiece={detailsViewPiece}
-						setFilter={handleFilterChange}
-					/>
-					<DetailsView
-						show={detailsViewPiece}
-						handleClose={() => {
-							setDetailsViewPiece(null);
-							setPreviewHTML("<html></html>");
-						}}
-						detailsViewPiece={detailsViewPiece}
-						previewHTML={previewHTML}
-					/>
-					<TableModal
-						show={modalPiece !== null}
-						modalPiece={modalPiece}
-						setModalPiece={setModalPiece}
-						modalConfirmChangesMode={modalConfirmChangesMode}
-						setModalConfirmChangesMode={setModalConfirmChangesMode}
-						handleUncheckPiece={(piece) => handleTogglePieceFlag(piece, false)}
-						sendEmail={handleSendEmail}
-					/>
-					<div
-						className="d-flex justify-content-between"
-						style={{
-							width: detailsViewPiece ? "60%" : "100%",
-							position: "fixed",
-							height: 40,
-							top: "calc(100vh - 60px)",
-							left: 0,
-							padding: 10,
-						}}
-					></div>
-				</>
-			) : (
-				<>
-					<div className="loader book">
-						<figure className="page"></figure>
-						<figure className="page"></figure>
-						<figure className="page"></figure>
-					</div>
+			<div
+				className={
+					detailsViewPiece
+						? "d-flex flex-column align-items-start gradient-background"
+						: "d-flex flex-column align-items-center gradient-background"
+				}
+			>
+				{filteredPieces.length ? (
+					<>
+						<Body />
+						<DetailsView
+							show={detailsViewPiece}
+							handleClose={() => {
+								setDetailsViewPiece(null);
+								setPreviewHTML("<html></html>");
+							}}
+							detailsViewPiece={detailsViewPiece}
+							previewHTML={previewHTML}
+						/>
+						<TableModal
+							show={modalPiece !== null}
+							modalPiece={modalPiece}
+							setModalPiece={setModalPiece}
+							modalConfirmChangesMode={modalConfirmChangesMode}
+							setModalConfirmChangesMode={setModalConfirmChangesMode}
+							handleUncheckPiece={(piece) =>
+								handleTogglePieceFlag(piece, false)
+							}
+							sendEmail={handleSendEmail}
+						/>
+						<div
+							className="d-flex justify-content-between"
+							style={{
+								width: detailsViewPiece ? "60%" : "100%",
+								position: "fixed",
+								height: 40,
+								top: "calc(100vh - 60px)",
+								left: 0,
+								padding: 10,
+							}}
+						></div>
+					</>
+				) : (
+					<>
+						<div className="loader book">
+							<figure className="page"></figure>
+							<figure className="page"></figure>
+							<figure className="page"></figure>
+						</div>
 
-					<h1 className="preloader-text">Loading</h1>
-				</>
-			)}
-		</div>
+						<h1 className="preloader-text">Loading</h1>
+					</>
+				)}
+			</div>
+		</PiecesContext.Provider>
 	);
 };
 
