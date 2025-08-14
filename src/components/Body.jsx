@@ -26,7 +26,7 @@ const Body = () => {
 				}}
 			>
 				<PieceTable
-					unreceivedPieces={filteredPieces.slice(
+					filteredPieces={filteredPieces.slice(
 						(currPage - 1) * PIECES_PER_PAGE,
 						currPage * PIECES_PER_PAGE
 					)}

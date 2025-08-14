@@ -144,6 +144,11 @@ const App = () => {
 		handleFetchPreviewHTML(piece.pieceId);
 	};
 
+	const handleCloseDetailsView = () => {
+		setDetailsViewPiece(null);
+		setPreviewHTML("<html></html>");
+	};
+
 	useEffect(() => {
 		handleFetchPieces();
 	}, []);
@@ -158,7 +163,7 @@ const App = () => {
 				handleOpenDetailsView,
 				detailsViewPiece,
 				handleFilterChange,
-				setDetailsViewPiece,
+				handleCloseDetailsView,
 				previewHTML,
 				modalPiece,
 				setModalPiece,
@@ -177,15 +182,7 @@ const App = () => {
 				{filteredPieces.length ? (
 					<>
 						<Body />
-						<DetailsView
-							show={detailsViewPiece}
-							handleClose={() => {
-								setDetailsViewPiece(null);
-								setPreviewHTML("<html></html>");
-							}}
-							detailsViewPiece={detailsViewPiece}
-							previewHTML={previewHTML}
-						/>
+						<DetailsView />
 						<TableModal
 							show={modalPiece !== null}
 							modalPiece={modalPiece}

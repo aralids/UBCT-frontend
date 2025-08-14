@@ -2,9 +2,8 @@ import Table from "react-bootstrap/Table";
 import { Form } from "react-bootstrap";
 import { usePiecesContext } from "../context/PiecesContext";
 
-const PieceTable = () => {
+const PieceTable = ({ filteredPieces }) => {
 	const {
-		filteredPieces,
 		handleSortPieces,
 		sortingSettings,
 		handleTogglePieceFlag,
@@ -91,9 +90,9 @@ const PieceTable = () => {
 										<Form.Control
 											type="text"
 											defaultValue={""}
-											onChange={({ target }) => {
-												handleFilterChange(target.value);
-											}}
+											onChange={({ target }) =>
+												handleFilterChange(target.value)
+											}
 										/>
 									</Form.Group>
 								) : (

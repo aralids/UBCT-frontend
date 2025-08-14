@@ -1,8 +1,12 @@
 import Offcanvas from "react-bootstrap/Offcanvas";
 import Preview from "./Preview";
 import Table from "react-bootstrap/Table";
+import { usePiecesContext } from "../context/PiecesContext";
 
-const DetailsView = ({ show, handleClose, detailsViewPiece, previewHTML }) => {
+const DetailsView = () => {
+	const { detailsViewPiece, handleCloseDetailsView, previewHTML } =
+		usePiecesContext();
+
 	if (!detailsViewPiece) {
 		return <></>;
 	}
@@ -19,8 +23,8 @@ const DetailsView = ({ show, handleClose, detailsViewPiece, previewHTML }) => {
 	return (
 		<Offcanvas
 			style={{ width: "40vw" }}
-			show={show}
-			onHide={handleClose}
+			show={detailsViewPiece}
+			onHide={handleCloseDetailsView}
 			placement="end"
 			backdrop={false}
 			scroll={true}
