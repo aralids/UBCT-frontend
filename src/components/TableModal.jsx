@@ -2,15 +2,18 @@ import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import Form from "react-bootstrap/Form";
 import { useState } from "react";
-const TableModal = ({
-	show,
-	modalPiece,
-	setModalPiece,
-	modalConfirmChangesMode,
-	setModalConfirmChangesMode,
-	handleUncheckPiece,
-	sendEmail,
-}) => {
+import { usePiecesContext } from "../context/PiecesContext";
+
+const TableModal = () => {
+	const {
+		modalPiece,
+		handleSendEmail,
+		handleCloseConfirmationModal,
+		handleTogglePieceFlag,
+		handleOpenConfirmationModal,
+		modalConfirmChangesMode,
+	} = usePiecesContext();
+
 	if (!modalPiece) {
 		return <></>;
 	}
@@ -40,7 +43,7 @@ const TableModal = ({
 	if (modalConfirmChangesMode) {
 		return (
 			<>
-				<Modal show={show}>
+				<Modal show={modalPiece !== null}>
 					<Modal.Header>
 						<Modal.Title>
 							Möchten Sie die Änderungen wirklich speichern und eine E-Mail an
@@ -58,25 +61,20 @@ const TableModal = ({
 						<Button
 							style={{ width: 100 }}
 							variant="primary"
-							onClick={() => {
-								setModalConfirmChangesMode(false);
-							}}
+							onClick={() => handleCloseConfirmationModal()}
 						>
 							Nein
 						</Button>
 						<Button
 							variant="primary"
 							style={{ width: 100 }}
-							onClick={() => {
-								//TODO: Make the following statement asynchronous.
-								sendEmail({
+							onClick={() =>
+								handleSendEmail({
 									...modalPiece,
 									newNote: newNote,
 									newDate: newDate,
-								});
-								setModalPiece(null);
-								setModalConfirmChangesMode(false);
-							}}
+								})
+							}
 						>
 							Ja
 						</Button>
@@ -89,11 +87,8 @@ const TableModal = ({
 	return (
 		<>
 			<Modal
-				show={show}
-				onHide={() => {
-					handleUncheckPiece(modalPiece);
-					setModalPiece(null);
-				}}
+				show={modalPiece !== null}
+				onHide={() => handleTogglePieceFlag(modalPiece, false)}
 			>
 				<Modal.Header closeButton>
 					<Modal.Title>Nächste Reklamation</Modal.Title>
@@ -127,24 +122,19 @@ const TableModal = ({
 				<Modal.Footer>
 					<Button
 						variant="primary"
-						onClick={() => {
-							//TODO: Make the following statement asynchronous.
-							handleUncheckPiece(modalPiece);
-							setModalPiece(null);
-						}}
+						onClick={() => handleTogglePieceFlag(modalPiece, false)}
 					>
 						Abbrechen
 					</Button>
 					<Button
 						variant="primary"
-						onClick={() => {
-							setModalPiece({
+						onClick={() =>
+							handleOpenConfirmationModal({
 								...modalPiece,
 								newNote: newNote,
 								newDate: newDate,
-							});
-							setModalConfirmChangesMode(true);
-						}}
+							})
+						}
 					>
 						Speichern & Senden
 					</Button>

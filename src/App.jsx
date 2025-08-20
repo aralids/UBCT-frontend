@@ -73,7 +73,11 @@ const App = () => {
 		setFilteredPieces(newFilteredPieces);
 
 		// Show modal.
-		setModalPiece(piece);
+		if (isChecked) {
+			setModalPiece(piece);
+		} else {
+			setModalPiece(null);
+		}
 	};
 
 	/**
@@ -123,6 +127,8 @@ const App = () => {
 
 	const handleSendEmail = async (piece) => {
 		await sendEmail(piece);
+		setModalPiece(null);
+		setModalConfirmChangesMode(false);
 	};
 
 	const handleFetchPieces = async () => {
@@ -149,6 +155,15 @@ const App = () => {
 		setPreviewHTML("<html></html>");
 	};
 
+	const handleOpenConfirmationModal = (newModalPiece) => {
+		setModalPiece(newModalPiece);
+		setModalConfirmChangesMode(true);
+	};
+
+	const handleCloseConfirmationModal = () => {
+		setModalConfirmChangesMode(false);
+	};
+
 	useEffect(() => {
 		handleFetchPieces();
 	}, []);
@@ -166,10 +181,10 @@ const App = () => {
 				handleCloseDetailsView,
 				previewHTML,
 				modalPiece,
-				setModalPiece,
 				modalConfirmChangesMode,
-				setModalConfirmChangesMode,
+				handleCloseConfirmationModal,
 				handleSendEmail,
+				handleOpenConfirmationModal,
 			}}
 		>
 			<div
@@ -183,17 +198,7 @@ const App = () => {
 					<>
 						<Body />
 						<DetailsView />
-						<TableModal
-							show={modalPiece !== null}
-							modalPiece={modalPiece}
-							setModalPiece={setModalPiece}
-							modalConfirmChangesMode={modalConfirmChangesMode}
-							setModalConfirmChangesMode={setModalConfirmChangesMode}
-							handleUncheckPiece={(piece) =>
-								handleTogglePieceFlag(piece, false)
-							}
-							sendEmail={handleSendEmail}
-						/>
+						<TableModal />
 						<div
 							className="d-flex justify-content-between"
 							style={{
