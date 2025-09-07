@@ -12,6 +12,10 @@ const Body = () => {
 	const totalPageNumber = parseInt(
 		Math.ceil(filteredPieces.length / PIECES_PER_PAGE)
 	);
+
+	const startIndex = (currPage - 1) * PIECES_PER_PAGE;
+	const endIndex = Math.min(currPage * PIECES_PER_PAGE, filteredPieces.length);
+
 	return (
 		<>
 			<div
@@ -36,6 +40,10 @@ const Body = () => {
 					setCurrPage={setCurrPage}
 					totalPageNumber={totalPageNumber}
 				/>
+				<div className="mt-2 mb-2 text-muted">
+					<strong>{startIndex}</strong>–<strong>{endIndex}</strong> of{" "}
+					<strong>{filteredPieces.length}</strong>
+				</div>
 			</div>
 		</>
 	);

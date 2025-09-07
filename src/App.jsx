@@ -92,7 +92,13 @@ const App = () => {
 			newFilter
 		);
 
-		setFilteredPieces(filtered);
+		setFilteredPieces(
+			sortPiecesBy(
+				filtered,
+				sortingSettingsRef.current.field,
+				sortingSettingsRef.current.order
+			)
+		);
 		setFilter(newFilter);
 	};
 
@@ -207,6 +213,17 @@ const App = () => {
 						<Body />
 						<DetailsView />
 						<TableModal />
+						<div
+							className="d-flex justify-content-between"
+							style={{
+								width: detailsViewPiece ? "60%" : "100%",
+								position: "fixed",
+								height: 40,
+								top: "calc(100vh - 60px)",
+								left: 0,
+								padding: 10,
+							}}
+						></div>
 					</>
 				) : (
 					<>

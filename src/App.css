@@ -137,6 +137,13 @@
 	animation: pageTurn 1.2s cubic-bezier(0, 0.39, 1, 0.68) 1.2s infinite;
 }
 
+.sticky-header th {
+	position: sticky;
+	top: 0;
+	background-color: white; /* or another contrasting color */
+	z-index: 2; /* keeps header above table rows */
+}
+
 /* Page turn */
 
 @-webkit-keyframes pageTurn {

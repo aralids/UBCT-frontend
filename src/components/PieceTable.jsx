@@ -59,7 +59,7 @@ const PieceTable = ({ filteredPieces }) => {
 	return (
 		<>
 			<Table striped bordered hover>
-				<thead>
+				<thead className="sticky-header">
 					<tr>
 						<th className="align-top"></th>
 						{columnList.map((item, index) => (
