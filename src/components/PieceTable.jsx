@@ -1,5 +1,11 @@
 import Table from "react-bootstrap/Table";
-import { Button, Form, Dropdown } from "react-bootstrap";
+import {
+	Button,
+	Form,
+	Dropdown,
+	OverlayTrigger,
+	Tooltip,
+} from "react-bootstrap";
 import { usePiecesContext } from "../context/PiecesContext";
 
 const PieceTable = ({ filteredPieces }) => {
@@ -18,6 +24,7 @@ const PieceTable = ({ filteredPieces }) => {
 				"Lieferant",
 				"Bestellnummer",
 				"Bestelltyp",
+				"Rechnungscode",
 				"Mahnstufe",
 		  ]
 		: [
@@ -25,6 +32,7 @@ const PieceTable = ({ filteredPieces }) => {
 				"Lieferant",
 				"Bestellnummer",
 				"Bestelltyp",
+				"Rechnungscode",
 				"Mahnstufe",
 				"DisplaySummary",
 				"Kurztitel",
@@ -35,6 +43,7 @@ const PieceTable = ({ filteredPieces }) => {
 				"vendorName",
 				"poLineNumber",
 				"ordertype",
+				"fund",
 				"local_claiming_level",
 		  ]
 		: [
@@ -42,6 +51,7 @@ const PieceTable = ({ filteredPieces }) => {
 				"vendorName",
 				"poLineNumber",
 				"ordertype",
+				"fund",
 				"local_claiming_level",
 				"displaySummary",
 				"title",
@@ -95,6 +105,23 @@ const PieceTable = ({ filteredPieces }) => {
 											</Dropdown.Toggle>
 
 											<Dropdown.Menu style={{ padding: "0.5rem 1rem" }}>
+												<div className="d-flex justify-content-between align-items-center mb-2">
+													<Button
+														variant="outline-danger"
+														size="sm"
+														onClick={() => {
+															const updatedFilter = filter.map((x) => ({
+																...x,
+																checked: false,
+															}));
+															handleFilterChange(updatedFilter);
+														}}
+													>
+														Uncheck All
+													</Button>
+												</div>
+												<hr className="my-2" />
+
 												{filter.map((f) => (
 													<Form.Check
 														key={f.label}
@@ -124,52 +151,63 @@ const PieceTable = ({ filteredPieces }) => {
 				</thead>
 				<tbody>
 					{filteredPieces.map((piece) => (
-						<tr
-							className={
-								detailsViewPiece && detailsViewPiece.pieceId === piece.pieceId
-									? "table-primary"
-									: piece.reclaimAgain === true
-									? "table-danger"
-									: ""
+						<OverlayTrigger
+							key={piece.pieceId}
+							placement="bottom"
+							overlay={
+								<Tooltip id={`tooltip-${piece.pieceId}`}>
+									Right-click to see details
+								</Tooltip>
 							}
-							onContextMenu={(e) => {
-								e.preventDefault();
-								handleOpenDetailsView(piece);
-							}}
 						>
-							<td>
-								<Form.Check
-									checked={piece.reclaimAgain === true}
-									onChange={({ target }) => {
-										if (target.checked) {
-											handleTogglePieceFlag(piece, true);
-										}
-									}}
-								/>
-							</td>
-							<td>{piece.acqUnitName}</td>
-							<td>{piece.vendorName}</td>
-							<td
-								style={{
-									cursor: "pointer",
-									color: "blue",
-									textDecorationLine: "underline",
+							<tr
+								className={
+									detailsViewPiece && detailsViewPiece.pieceId === piece.pieceId
+										? "table-primary"
+										: piece.reclaimAgain === true
+										? "table-danger"
+										: ""
+								}
+								onContextMenu={(e) => {
+									e.preventDefault();
+									handleOpenDetailsView(piece);
 								}}
-								onClick={() => window.open(piece["title_link"], "_blank")}
 							>
-								{piece.poLineNumber}
-							</td>
-							<td>{piece.ordertype}</td>
-							<td>{piece.local_claiming_level}</td>
-							{detailsViewPiece ? (
-								<></>
-							) : (
-								<>
-									<td>{piece.displaySummary}</td>
-									<td>{piece.title}</td>
-								</>
-							)}
-						</tr>
+								<td>
+									<Form.Check
+										checked={piece.reclaimAgain === true}
+										onChange={({ target }) => {
+											if (target.checked) {
+												handleTogglePieceFlag(piece, true);
+											}
+										}}
+									/>
+								</td>
+								<td>{piece.acqUnitName}</td>
+								<td>{piece.vendorName}</td>
+								<td
+									style={{
+										cursor: "pointer",
+										color: "blue",
+										textDecorationLine: "underline",
+									}}
+									onClick={() => window.open(piece["title_link"], "_blank")}
+								>
+									{piece.poLineNumber}
+								</td>
+								<td>{piece.ordertype}</td>
+								<td>{piece.fund}</td>
+								<td>{piece.local_claiming_level}</td>
+								{detailsViewPiece ? (
+									<></>
+								) : (
+									<>
+										<td>{piece.displaySummary}</td>
+										<td>{piece.title}</td>
+									</>
+								)}
+							</tr>
+						</OverlayTrigger>
 					))}
 				</tbody>
 			</Table>
