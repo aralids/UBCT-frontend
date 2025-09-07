@@ -51,9 +51,10 @@ const PieceTable = ({ filteredPieces }) => {
 			<Table striped bordered hover>
 				<thead>
 					<tr>
-						<th></th>
-						{...columnList.map((item, index) => (
+						<th className="align-top"></th>
+						{columnList.map((item, index) => (
 							<th
+								className="align-top"
 								style={{
 									cursor: "pointer",
 								}}
@@ -87,7 +88,7 @@ const PieceTable = ({ filteredPieces }) => {
 									)}
 								</div>
 								{item === "Erwerbungsteam" ? (
-									<Form.Group className="mb-3">
+									<Form.Group>
 										<Dropdown>
 											<Dropdown.Toggle variant="secondary" id="filter-dropdown">
 												Select Acquisition Units
@@ -115,18 +116,14 @@ const PieceTable = ({ filteredPieces }) => {
 										</Dropdown>
 									</Form.Group>
 								) : (
-									<Form.Group className="mb-3" style={{ opacity: 0 }}>
-										<Button style={{ cursor: "pointer" }} disabled>
-											Select Acquisition Units
-										</Button>
-									</Form.Group>
+									<></>
 								)}
 							</th>
 						))}
 					</tr>
 				</thead>
 				<tbody>
-					{...filteredPieces.map((piece) => (
+					{filteredPieces.map((piece) => (
 						<tr
 							className={
 								detailsViewPiece && detailsViewPiece.pieceId === piece.pieceId

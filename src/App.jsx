@@ -202,22 +202,11 @@ const App = () => {
 						: "d-flex flex-column align-items-center gradient-background"
 				}
 			>
-				{filteredPieces.length ? (
+				{unreceivedPieces.length ? (
 					<>
 						<Body />
 						<DetailsView />
 						<TableModal />
-						<div
-							className="d-flex justify-content-between"
-							style={{
-								width: detailsViewPiece ? "60%" : "100%",
-								position: "fixed",
-								height: 40,
-								top: "calc(100vh - 60px)",
-								left: 0,
-								padding: 10,
-							}}
-						></div>
 					</>
 				) : (
 					<>
