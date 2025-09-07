@@ -1,5 +1,5 @@
 import Table from "react-bootstrap/Table";
-import { Form } from "react-bootstrap";
+import { Button, Form, Dropdown } from "react-bootstrap";
 import { usePiecesContext } from "../context/PiecesContext";
 
 const PieceTable = ({ filteredPieces }) => {
@@ -10,6 +10,7 @@ const PieceTable = ({ filteredPieces }) => {
 		handleOpenDetailsView,
 		detailsViewPiece,
 		handleFilterChange,
+		filter,
 	} = usePiecesContext();
 	const columnList = detailsViewPiece
 		? [
@@ -87,21 +88,37 @@ const PieceTable = ({ filteredPieces }) => {
 								</div>
 								{item === "Erwerbungsteam" ? (
 									<Form.Group className="mb-3">
-										<Form.Control
-											type="text"
-											defaultValue={""}
-											onChange={({ target }) =>
-												handleFilterChange(target.value)
-											}
-										/>
+										<Dropdown>
+											<Dropdown.Toggle variant="secondary" id="filter-dropdown">
+												Select Acquisition Units
+											</Dropdown.Toggle>
+
+											<Dropdown.Menu style={{ padding: "0.5rem 1rem" }}>
+												{filter.map((f) => (
+													<Form.Check
+														key={f.label}
+														type="checkbox"
+														id={`filter-${f.label}`}
+														label={f.label}
+														checked={f.checked}
+														onChange={() => {
+															const updatedFilter = filter.map((x) =>
+																x.label === f.label
+																	? { ...x, checked: !x.checked }
+																	: x
+															);
+															handleFilterChange(updatedFilter);
+														}}
+													/>
+												))}
+											</Dropdown.Menu>
+										</Dropdown>
 									</Form.Group>
 								) : (
 									<Form.Group className="mb-3" style={{ opacity: 0 }}>
-										<Form.Control
-											type="text"
-											defaultValue={""}
-											style={{ cursor: "pointer" }}
-										/>
+										<Button style={{ cursor: "pointer" }} disabled>
+											Select Acquisition Units
+										</Button>
 									</Form.Group>
 								)}
 							</th>

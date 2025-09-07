@@ -37,7 +37,7 @@ const App = () => {
 
 	const [previewHTML, setPreviewHTML] = useState("<html></html>");
 
-	const [filter, setFilter] = useState("");
+	const [filter, setFilter] = useState([]);
 	const filterRef = useRef({ current: filter });
 	filterRef.current = filter;
 
@@ -137,6 +137,13 @@ const App = () => {
 		setFilteredPieces(
 			sortPiecesBy(pieces, sortingSettings.field, sortingSettings.order)
 		);
+
+		const uniqueAcqUnits = [...new Set(pieces.map((p) => p.acqUnitName))];
+		const filterItems = uniqueAcqUnits.map((unit) => ({
+			label: unit,
+			checked: true,
+		}));
+		setFilter(filterItems);
 	};
 
 	const handleFetchPreviewHTML = async (pieceId) => {
@@ -185,6 +192,7 @@ const App = () => {
 				handleCloseConfirmationModal,
 				handleSendEmail,
 				handleOpenConfirmationModal,
+				filter,
 			}}
 		>
 			<div
