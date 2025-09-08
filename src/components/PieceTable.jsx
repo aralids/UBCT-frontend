@@ -94,17 +94,28 @@ const PieceTable = ({ filteredPieces }) => {
 											</span>
 										)
 									) : (
-										<></>
+										<span
+											className="material-symbols-outlined m-0 p-0"
+											style={{ opacity: 0 }}
+										>
+											arrow_upward
+										</span>
 									)}
 								</div>
 								{item === "Erwerbungsteam" ? (
 									<Form.Group>
 										<Dropdown>
-											<Dropdown.Toggle variant="secondary" id="filter-dropdown">
-												Select Acquisition Units
+											<Dropdown.Toggle
+												variant="secondary"
+												id="filter-dropdown"
+												style={{ width: 200 }}
+											>
+												Filter
 											</Dropdown.Toggle>
 
-											<Dropdown.Menu style={{ padding: "0.5rem 1rem" }}>
+											<Dropdown.Menu
+												style={{ padding: "0.5rem 1rem", width: 200 }}
+											>
 												<div className="d-flex justify-content-between align-items-center mb-2">
 													<Button
 														variant="outline-danger"

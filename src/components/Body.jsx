@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 
 import PieceTable from "./PieceTable";
 import PiecePagination from "./PiecePagination";
@@ -16,9 +16,20 @@ const Body = () => {
 	const startIndex = (currPage - 1) * PIECES_PER_PAGE;
 	const endIndex = Math.min(currPage * PIECES_PER_PAGE, filteredPieces.length);
 
+	// 👇 ref to the bottom element
+	const bottomRef = useRef(null);
+
+	// 👇 whenever page changes, scroll into view
+	useEffect(() => {
+		if (bottomRef.current) {
+			bottomRef.current.scrollIntoView({ behavior: "auto" });
+		}
+	}, [currPage]);
+
 	return (
 		<>
 			<div
+				ref={bottomRef}
 				className="d-flex flex-column align-items-center"
 				style={{
 					backgroundColor: "rgb(100, 100, 100, 0.3)",
