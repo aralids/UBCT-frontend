@@ -144,6 +144,24 @@
 	z-index: 2; /* keeps header above table rows */
 }
 
+td {
+	word-break: break-word;
+}
+
+@media (max-width: 1130px) {
+	* {
+		font-size: 1vw;
+	}
+
+	.material-symbols-outlined {
+		font-size: 2vw;
+	}
+
+	td {
+		word-break: break-all;
+	}
+}
+
 /* Page turn */
 
 @-webkit-keyframes pageTurn {

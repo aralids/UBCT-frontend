@@ -75,7 +75,7 @@ const PieceTable = ({ filteredPieces }) => {
 								}
 							>
 								<div
-									className="d-flex"
+									className="d-flex "
 									onClick={
 										item === "Erwerbungsteam"
 											? () => handleSortPieces(piecePropertyList[index])
@@ -108,7 +108,7 @@ const PieceTable = ({ filteredPieces }) => {
 											<Dropdown.Toggle
 												variant="secondary"
 												id="filter-dropdown"
-												style={{ width: 200 }}
+												style={{ width: "100%" }}
 											>
 												Filter
 											</Dropdown.Toggle>

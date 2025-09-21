@@ -18,6 +18,9 @@ import {
 
 import { PiecesContext } from "./context/PiecesContext";
 
+const previewPlaceHolder =
+	"<html><h1 style='color: black;' class='preloader-text'>Loading preview</h1></html>";
+
 const App = () => {
 	const [unreceivedPieces, setUnreceivedPieces] = useState([]);
 	const unreceivedPiecesRef = useRef({ current: unreceivedPieces });
@@ -35,7 +38,7 @@ const App = () => {
 
 	const [detailsViewPiece, setDetailsViewPiece] = useState(null);
 
-	const [previewHTML, setPreviewHTML] = useState("<html></html>");
+	const [previewHTML, setPreviewHTML] = useState(previewPlaceHolder);
 
 	const [filter, setFilter] = useState([]);
 	const filterRef = useRef({ current: filter });
@@ -158,14 +161,14 @@ const App = () => {
 	};
 
 	const handleOpenDetailsView = (piece) => {
-		setPreviewHTML("<html></html>");
+		setPreviewHTML(previewPlaceHolder);
 		setDetailsViewPiece(piece);
 		handleFetchPreviewHTML(piece.pieceId);
 	};
 
 	const handleCloseDetailsView = () => {
 		setDetailsViewPiece(null);
-		setPreviewHTML("<html></html>");
+		setPreviewHTML(previewPlaceHolder);
 	};
 
 	const handleOpenConfirmationModal = (newModalPiece) => {
@@ -213,17 +216,6 @@ const App = () => {
 						<Body />
 						<DetailsView />
 						<TableModal />
-						<div
-							className="d-flex justify-content-between"
-							style={{
-								width: detailsViewPiece ? "60%" : "100%",
-								position: "fixed",
-								height: 40,
-								top: "calc(100vh - 60px)",
-								left: 0,
-								padding: 10,
-							}}
-						></div>
 					</>
 				) : (
 					<>
