@@ -18,9 +18,6 @@ import {
 
 import { PiecesContext } from "./context/PiecesContext";
 
-const previewPlaceHolder =
-	"<html><h1 style='color: black;' class='preloader-text'>Loading preview</h1></html>";
-
 const App = () => {
 	const [unreceivedPieces, setUnreceivedPieces] = useState([]);
 	const unreceivedPiecesRef = useRef({ current: unreceivedPieces });
@@ -38,7 +35,7 @@ const App = () => {
 
 	const [detailsViewPiece, setDetailsViewPiece] = useState(null);
 
-	const [previewHTML, setPreviewHTML] = useState(previewPlaceHolder);
+	const [previewHTML, setPreviewHTML] = useState(null);
 
 	const [filter, setFilter] = useState([]);
 	const filterRef = useRef({ current: filter });
@@ -47,6 +44,21 @@ const App = () => {
 	const [filteredPieces, setFilteredPieces] = useState([]);
 	const filteredPiecesRef = useRef({ current: filteredPieces });
 	filteredPiecesRef.current = filteredPieces;
+
+	const [componentWidths, setComponentWidths] = useState({
+		body: "90vw",
+		detailsView: "0vw",
+	});
+	const componentWidthsRef = useRef({ current: componentWidths });
+	componentWidthsRef.current = componentWidths;
+
+	const handleComponentWidthsChange = (newDetailsViewWidth) => {
+		const newBodyWidth = Math.max(850, window.innerWidth - newDetailsViewWidth);
+		setComponentWidths({
+			body: newBodyWidth,
+			detailsView: newDetailsViewWidth,
+		});
+	};
 
 	/**
 	 * Handles toggling the reclaimAgain flag for a given piece and updates state accordingly.
@@ -135,9 +147,9 @@ const App = () => {
 	};
 
 	const handleSendEmail = async (piece) => {
-		await sendEmail(piece);
 		setModalPiece(null);
 		setModalConfirmChangesMode(false);
+		await sendEmail(piece);
 	};
 
 	const handleFetchPieces = async () => {
@@ -161,14 +173,18 @@ const App = () => {
 	};
 
 	const handleOpenDetailsView = (piece) => {
-		setPreviewHTML(previewPlaceHolder);
+		setPreviewHTML(null);
 		setDetailsViewPiece(piece);
 		handleFetchPreviewHTML(piece.pieceId);
+		if (componentWidthsRef.current.body === "90vw") {
+			setComponentWidths({ body: "60vw", detailsView: "40vw" });
+		}
 	};
 
 	const handleCloseDetailsView = () => {
 		setDetailsViewPiece(null);
-		setPreviewHTML(previewPlaceHolder);
+		setPreviewHTML(null);
+		setComponentWidths({ body: "90vw", detailsView: "0vw" });
 	};
 
 	const handleOpenConfirmationModal = (newModalPiece) => {
@@ -202,6 +218,8 @@ const App = () => {
 				handleSendEmail,
 				handleOpenConfirmationModal,
 				filter,
+				componentWidths,
+				handleComponentWidthsChange,
 			}}
 		>
 			<div

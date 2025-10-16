@@ -50,12 +50,9 @@ const sendEmail = async (piece) => {
  */
 const getPreviewHTML = async (pieceId) => {
 	try {
-		const start = performance.now();
 		const response = await axios.get(`/api/preview/${pieceId}`, {
 			responseType: "text",
 		});
-		const end = performance.now();
-		console.log(`Request took ${(end - start).toFixed(2)} ms`);
 		return JSON.parse(response.data);
 	} catch (error) {
 		console.error("Failed to get preview HTML:", error);

@@ -4,9 +4,11 @@ import PieceTable from "./PieceTable";
 import PiecePagination from "./PiecePagination";
 import { PIECES_PER_PAGE } from "../utils/config";
 import { usePiecesContext } from "../context/PiecesContext";
+import LogOutButton from "./LogOutButton";
 
 const Body = () => {
-	const { filteredPieces, detailsViewPiece } = usePiecesContext();
+	const { filteredPieces, detailsViewPiece, componentWidths } =
+		usePiecesContext();
 
 	const [currPage, setCurrPage] = useState(1);
 	const totalPageNumber = parseInt(
@@ -37,13 +39,17 @@ const Body = () => {
 				className="d-flex flex-column align-items-center"
 				style={{
 					backgroundColor: "rgb(100, 100, 100, 0.3)",
-					width: detailsViewPiece ? "60vw" : "90vw",
+					width: componentWidths.body,
 					height: "fit-content",
 					marginTop: "20px",
 					marginBottom: "20px",
 					borderRadius: "5px",
 				}}
 			>
+				<div className="d-flex justify-content-end p-3 w-100">
+					<LogOutButton />
+				</div>
+
 				<PieceTable
 					filteredPieces={filteredPieces.slice(
 						(currPage - 1) * PIECES_PER_PAGE,

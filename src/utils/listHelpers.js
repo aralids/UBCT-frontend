@@ -53,7 +53,7 @@ const sortPiecesBy = (pieces, field, order = "asc") => {
  * @param {string} filterValue - The text to match in `acqUnitName`.
  * @returns {Array<Object>} A filtered array of pieces.
  */
-function filterPiecesByAcqUnit(pieces, items) {
+const filterPiecesByAcqUnit = (pieces, items) => {
 	const activeFilters = items
 		.filter((item) => item.checked)
 		.map((item) => item.label);
@@ -63,6 +63,6 @@ function filterPiecesByAcqUnit(pieces, items) {
 	return pieces.filter((piece) =>
 		activeFilters.some((label) => piece.acqUnitName === label)
 	);
-}
+};
 
 export { togglePieceFlag, sortPiecesBy, filterPiecesByAcqUnit };
