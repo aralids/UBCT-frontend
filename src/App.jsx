@@ -9,6 +9,7 @@ import {
 	fetchPieces,
 	getPreviewHTML,
 	sendEmail,
+	getLocalPiece,
 } from "./services/pieceService";
 import {
 	togglePieceFlag,
@@ -52,6 +53,8 @@ const App = () => {
 	const componentWidthsRef = useRef({ current: componentWidths });
 	componentWidthsRef.current = componentWidths;
 
+	const [pieceChangedWarning, setPieceChangedWarning] = useState(null);
+
 	const handleComponentWidthsChange = (newDetailsViewWidth) => {
 		const newBodyWidth = Math.max(850, window.innerWidth - newDetailsViewWidth);
 		setComponentWidths({
@@ -66,7 +69,7 @@ const App = () => {
 	 * @param {Object} piece - The piece object whose flag should be toggled.
 	 * @param {boolean} isChecked - Whether the flag should be set to true or false.
 	 */
-	const handleTogglePieceFlag = (piece, isChecked) => {
+	const handleTogglePieceFlag = async (piece, isChecked) => {
 		// Update array with all pieces.
 		const newUnreceivedPieces = togglePieceFlag(
 			unreceivedPiecesRef.current,
@@ -90,8 +93,13 @@ const App = () => {
 		// Show modal.
 		if (isChecked) {
 			setModalPiece(piece);
+			const data = await getLocalPiece(piece.pieceId);
+			setPieceChangedWarning(
+				data["local_claiming_level"] !== piece["local_claiming_level"]
+			);
 		} else {
 			setModalPiece(null);
+			setPieceChangedWarning(null);
 		}
 	};
 
@@ -187,9 +195,14 @@ const App = () => {
 		setComponentWidths({ body: "90vw", detailsView: "0vw" });
 	};
 
-	const handleOpenConfirmationModal = (newModalPiece) => {
+	const handleOpenConfirmationModal = async (newModalPiece) => {
 		setModalPiece(newModalPiece);
 		setModalConfirmChangesMode(true);
+		setPieceChangedWarning(null);
+		const data = await getLocalPiece(newModalPiece.pieceId);
+		setPieceChangedWarning(
+			data["local_claiming_level"] !== newModalPiece["local_claiming_level"]
+		);
 	};
 
 	const handleCloseConfirmationModal = () => {
@@ -220,6 +233,7 @@ const App = () => {
 				filter,
 				componentWidths,
 				handleComponentWidthsChange,
+				pieceChangedWarning,
 			}}
 		>
 			<div

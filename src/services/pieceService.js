@@ -60,4 +60,22 @@ const getPreviewHTML = async (pieceId) => {
 	}
 };
 
-export { fetchPieces, sendEmail, getPreviewHTML };
+/**
+ * Retrieves a local piece from the backend API.
+ *
+ * @param {string|number} pieceId - The unique identifier of the piece.
+ * @returns {Promise<Object>} Resolves with the local piece data.
+ * @throws Will rethrow any network or server error.
+ */
+const getLocalPiece = async (pieceId) => {
+	try {
+		const response = await axios.get(`/api/local_piece/${pieceId}`);
+		return response.data;
+	} catch (error) {
+		console.error("Failed to fetch local piece:", error);
+		throw error;
+	}
+};
+
+export { fetchPieces, sendEmail, getPreviewHTML, getLocalPiece };
+

@@ -3,6 +3,7 @@ import Modal from "react-bootstrap/Modal";
 import Form from "react-bootstrap/Form";
 import { useState } from "react";
 import { usePiecesContext } from "../context/PiecesContext";
+import PieceWarningBox from "./PieceWarningBox";
 
 const TableModal = () => {
 	const {
@@ -12,6 +13,7 @@ const TableModal = () => {
 		handleTogglePieceFlag,
 		handleOpenConfirmationModal,
 		modalConfirmChangesMode,
+		pieceChangedWarning,
 	} = usePiecesContext();
 
 	if (!modalPiece) {
@@ -22,6 +24,7 @@ const TableModal = () => {
 		return String(num).padStart(2, "0");
 	};
 
+	console.log("TableModal.jsx pieceChangedWarning: ", pieceChangedWarning);
 	let newReclamationDate = new Date();
 	const daysToAdd = modalPiece["claimingInterval"];
 	newReclamationDate.setDate(newReclamationDate.getDate() + daysToAdd);
@@ -51,6 +54,11 @@ const TableModal = () => {
 						</Modal.Title>
 					</Modal.Header>
 					<Modal.Body>
+						{pieceChangedWarning === true ? (
+							<PieceWarningBox pieceChangedWarning={pieceChangedWarning} />
+						) : (
+							<></>
+						)}
 						Bestellnummer: {modalPiece.poLineNumber}
 						<br />
 						DisplaySummary: {modalPiece.displaySummary}
@@ -66,6 +74,7 @@ const TableModal = () => {
 							Nein
 						</Button>
 						<Button
+							disabled={pieceChangedWarning !== false}
 							variant="primary"
 							style={{ width: 100 }}
 							onClick={() =>
@@ -94,6 +103,7 @@ const TableModal = () => {
 					<Modal.Title>Nächste Reklamation</Modal.Title>
 				</Modal.Header>
 				<Modal.Body>
+					<PieceWarningBox pieceChangedWarning={pieceChangedWarning} />
 					Bestellnummer: {modalPiece.poLineNumber}
 					<br />
 					DisplaySummary: {modalPiece.displaySummary}
@@ -127,6 +137,7 @@ const TableModal = () => {
 						Abbrechen
 					</Button>
 					<Button
+						disabled={pieceChangedWarning !== false}
 						variant="primary"
 						onClick={() =>
 							handleOpenConfirmationModal({
