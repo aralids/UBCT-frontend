@@ -116,8 +116,9 @@ const PieceTable = ({ filteredPieces }) => {
 											<Dropdown.Menu
 												style={{ padding: "0.5rem 1rem", width: 200 }}
 											>
-												<div className="d-flex justify-content-between align-items-center mb-2">
+												<div className="d-flex flex-column justify-content-between align-items-center mb-2">
 													<Button
+														className="mb-2 w-100"
 														variant="outline-danger"
 														size="sm"
 														onClick={() => {
@@ -128,7 +129,22 @@ const PieceTable = ({ filteredPieces }) => {
 															handleFilterChange(updatedFilter);
 														}}
 													>
+														{" "}
 														Uncheck All
+													</Button>
+													<Button
+														className="w-100"
+														variant="outline-danger"
+														size="sm"
+														onClick={() => {
+															const updatedFilter = filter.map((x) => ({
+																...x,
+																checked: true,
+															}));
+															handleFilterChange(updatedFilter);
+														}}
+													>
+														Check All
 													</Button>
 												</div>
 												<hr className="my-2" />

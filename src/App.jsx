@@ -13,8 +13,8 @@ import {
 } from "./services/pieceService";
 import {
 	togglePieceFlag,
-	filterPiecesByAcqUnit,
 	sortPiecesBy,
+	filterPieces,
 } from "./utils/listHelpers";
 
 import { PiecesContext } from "./context/PiecesContext";
@@ -79,7 +79,7 @@ const App = () => {
 		setUnreceivedPieces(newUnreceivedPieces);
 
 		// Update array with currently shown pieces.
-		let newFilteredPieces = filterPiecesByAcqUnit(
+		let newFilteredPieces = filterPieces(
 			newUnreceivedPieces,
 			filterRef.current
 		);
@@ -110,10 +110,7 @@ const App = () => {
 	 * @param {string} newFilter - The new filter string entered by the user.
 	 */
 	const handleFilterChange = (newFilter) => {
-		const filtered = filterPiecesByAcqUnit(
-			unreceivedPiecesRef.current,
-			newFilter
-		);
+		const filtered = filterPieces(unreceivedPiecesRef.current, newFilter);
 
 		setFilteredPieces(
 			sortPiecesBy(

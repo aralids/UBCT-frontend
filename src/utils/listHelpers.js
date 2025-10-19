@@ -65,4 +65,27 @@ const filterPiecesByAcqUnit = (pieces, items) => {
 	);
 };
 
-export { togglePieceFlag, sortPiecesBy, filterPiecesByAcqUnit };
+const filterPieces = (pieces, filters) => {
+	// Check if there is at least one active filter
+	const hasAnyActiveFilter = Object.values(filters).some(
+		(values) => Array.isArray(values) && values.length > 0
+	);
+	if (!hasAnyActiveFilter) return pieces;
+
+	return pieces.filter((piece) =>
+		Object.entries(filters).some(([key, values]) => {
+			if (!values || values.length === 0) return false;
+
+			// "include" filters (case-insensitive substring)
+			if (["displaySummary", "title"].includes(key)) {
+				const pieceValue = piece[key]?.toLowerCase?.() ?? "";
+				return values.some((v) => pieceValue.includes(v.toLowerCase()));
+			}
+
+			// strict equality for all other filters
+			return values.includes(piece[key]);
+		})
+	);
+};
+
+export { togglePieceFlag, sortPiecesBy, filterPiecesByAcqUnit, filterPieces };
