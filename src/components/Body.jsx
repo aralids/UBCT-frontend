@@ -15,7 +15,10 @@ const Body = () => {
 		Math.ceil(filteredPieces.length / PIECES_PER_PAGE)
 	);
 
-	const startIndex = (currPage - 1) * PIECES_PER_PAGE + 1;
+	const startIndex =
+		(currPage - 1) * PIECES_PER_PAGE > 0
+			? (currPage - 1) * PIECES_PER_PAGE + 1
+			: 0;
 	const endIndex = Math.min(currPage * PIECES_PER_PAGE, filteredPieces.length);
 
 	// 👇 ref to the bottom element

@@ -169,13 +169,21 @@ const App = () => {
 			label: unit,
 			checked: true,
 		}));
-		console.log("piece 1: ", pieces[0]);
 		const uniqueOrderTypes = [...new Set(pieces.map((p) => p.ordertype))];
 		const filterOrderTypeItems = uniqueOrderTypes.map((unit) => ({
 			label: unit,
 			checked: true,
 		}));
-		setFilter({ acqUnitName: filterItems, ordertype: filterOrderTypeItems });
+		setFilter({
+			acqUnitName: filterItems,
+			ordertype: filterOrderTypeItems,
+			vendorName: "",
+			poLineNumber: "",
+			fund: "",
+			local_claiming_level: "",
+			displaySummary: "",
+			title: "",
+		});
 	};
 
 	const handleFetchPreviewHTML = async (pieceId) => {

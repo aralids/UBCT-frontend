@@ -111,14 +111,37 @@ const TableModal = () => {
 					<br />
 					<Form>
 						<Form.Group className="mb-3">
-							<Form.Label>Neues Datum eingeben: </Form.Label>
+							<Form.Label>Neues Datum eingeben:</Form.Label>
 							<Form.Control
 								type="date"
 								min={tomorrowFormatted}
-								defaultValue={newDate}
-								onChange={({ target }) => setNewDate(target.value)}
+								value={newDate}
+								onChange={({ target }) => {
+									const typedValue = target.value;
+
+									// Snap invalid date to min
+									setNewDate(
+										typedValue >= tomorrowFormatted
+											? typedValue
+											: tomorrowFormatted
+									);
+								}}
+								// Red border if user typed a value before tomorrow
+								isInvalid={(() => {
+									const typedValue = document.activeElement.value; // current typed value
+									return typedValue < tomorrowFormatted;
+								})()}
 							/>
+							{(() => {
+								const typedValue = document.activeElement.value;
+								return typedValue < tomorrowFormatted ? (
+									<Form.Text style={{ color: "red" }}>
+										Das Datum darf nicht vor dem {tomorrowFormatted} liegen.
+									</Form.Text>
+								) : null;
+							})()}
 						</Form.Group>
+
 						<Form.Group className="mb-3">
 							<Form.Label>External note: </Form.Label>
 							<Form.Control

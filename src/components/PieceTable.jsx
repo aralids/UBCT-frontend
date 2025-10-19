@@ -1,13 +1,8 @@
 import Table from "react-bootstrap/Table";
-import {
-	Button,
-	Form,
-	Dropdown,
-	OverlayTrigger,
-	Tooltip,
-} from "react-bootstrap";
+import { Form, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { usePiecesContext } from "../context/PiecesContext";
 import DropdownFilter from "./DropdownFilter";
+import TextInputFilter from "./TextInputFilter";
 
 const PieceTable = ({ filteredPieces }) => {
 	const {
@@ -16,8 +11,6 @@ const PieceTable = ({ filteredPieces }) => {
 		handleTogglePieceFlag,
 		handleOpenDetailsView,
 		detailsViewPiece,
-		handleFilterChange,
-		filter,
 	} = usePiecesContext();
 	const columnList = detailsViewPiece
 		? [
@@ -65,6 +58,7 @@ const PieceTable = ({ filteredPieces }) => {
 						<th className="align-top"></th>
 						{columnList.map((item, index) => (
 							<th
+								key={item}
 								className="align-top"
 								style={{
 									cursor: "pointer",
@@ -94,15 +88,10 @@ const PieceTable = ({ filteredPieces }) => {
 										</span>
 									)}
 								</div>
-								{item === "Erwerbungsteam" ? (
-									<DropdownFilter filterName={"acqUnitName"} />
+								{item === "Erwerbungsteam" || item === "Bestelltyp" ? (
+									<DropdownFilter filterName={piecePropertyList[index]} />
 								) : (
-									<></>
-								)}
-								{item === "Bestelltyp" ? (
-									<DropdownFilter filterName={"ordertype"} />
-								) : (
-									<></>
+									<TextInputFilter filterName={piecePropertyList[index]} />
 								)}
 							</th>
 						))}

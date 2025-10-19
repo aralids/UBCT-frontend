@@ -84,17 +84,16 @@ const filterPieces = (pieces, filters) => {
 		Object.entries(filters).every(([key, arr]) => {
 			const uncheckedLabels = exclusionFilters[key] ?? [];
 
-			// For text-based fields ("include" principle)
-			if (["displaySummary", "title"].includes(key)) {
+			// ✅ Dynamic text-based filter detection
+			if (typeof filters[key] === "string") {
 				const pieceValue = piece[key]?.toLowerCase?.() ?? "";
-
-				// Exclude if it *includes* any unchecked string
-				return !uncheckedLabels.some((v) =>
-					pieceValue.includes(v.toLowerCase())
-				);
+				if (key === "local_claiming_level") {
+					return piece[key] === Number(filters[key]);
+				}
+				return pieceValue.includes(filters[key].toLowerCase());
 			}
 
-			// For strict-equality filters
+			// For strict-equality filters (checklists)
 			return !uncheckedLabels.includes(piece[key]);
 		})
 	);
