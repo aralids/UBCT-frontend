@@ -66,24 +66,36 @@ const filterPiecesByAcqUnit = (pieces, items) => {
 };
 
 const filterPieces = (pieces, filters) => {
-	// Check if there is at least one active filter
-	const hasAnyActiveFilter = Object.values(filters).some(
-		(values) => Array.isArray(values) && values.length > 0
-	);
-	if (!hasAnyActiveFilter) return pieces;
+	// Build an exclusion map: for each filter category, collect unchecked labels
+	const exclusionFilters = Object.entries(filters).reduce((acc, [key, arr]) => {
+		if (!Array.isArray(arr)) return acc;
+		const uncheckedLabels = arr.filter((f) => !f.checked).map((f) => f.label);
+		if (uncheckedLabels.length > 0) {
+			acc[key] = uncheckedLabels;
+		}
+		return acc;
+	}, {});
+
+	// ❗ If there are no filters at all, return empty list
+	if (Object.keys(filters).length === 0) return [];
 
 	return pieces.filter((piece) =>
-		Object.entries(filters).some(([key, values]) => {
-			if (!values || values.length === 0) return false;
+		// Piece must satisfy all filter rules
+		Object.entries(filters).every(([key, arr]) => {
+			const uncheckedLabels = exclusionFilters[key] ?? [];
 
-			// "include" filters (case-insensitive substring)
+			// For text-based fields ("include" principle)
 			if (["displaySummary", "title"].includes(key)) {
 				const pieceValue = piece[key]?.toLowerCase?.() ?? "";
-				return values.some((v) => pieceValue.includes(v.toLowerCase()));
+
+				// Exclude if it *includes* any unchecked string
+				return !uncheckedLabels.some((v) =>
+					pieceValue.includes(v.toLowerCase())
+				);
 			}
 
-			// strict equality for all other filters
-			return values.includes(piece[key]);
+			// For strict-equality filters
+			return !uncheckedLabels.includes(piece[key]);
 		})
 	);
 };

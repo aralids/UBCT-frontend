@@ -169,7 +169,13 @@ const App = () => {
 			label: unit,
 			checked: true,
 		}));
-		setFilter(filterItems);
+		console.log("piece 1: ", pieces[0]);
+		const uniqueOrderTypes = [...new Set(pieces.map((p) => p.ordertype))];
+		const filterOrderTypeItems = uniqueOrderTypes.map((unit) => ({
+			label: unit,
+			checked: true,
+		}));
+		setFilter({ acqUnitName: filterItems, ordertype: filterOrderTypeItems });
 	};
 
 	const handleFetchPreviewHTML = async (pieceId) => {

@@ -7,6 +7,7 @@ import {
 	Tooltip,
 } from "react-bootstrap";
 import { usePiecesContext } from "../context/PiecesContext";
+import DropdownFilter from "./DropdownFilter";
 
 const PieceTable = ({ filteredPieces }) => {
 	const {
@@ -68,19 +69,10 @@ const PieceTable = ({ filteredPieces }) => {
 								style={{
 									cursor: "pointer",
 								}}
-								onClick={
-									item !== "Erwerbungsteam"
-										? () => handleSortPieces(piecePropertyList[index])
-										: () => {}
-								}
 							>
 								<div
 									className="d-flex "
-									onClick={
-										item === "Erwerbungsteam"
-											? () => handleSortPieces(piecePropertyList[index])
-											: () => {}
-									}
+									onClick={() => handleSortPieces(piecePropertyList[index])}
 								>
 									{item}
 									{sortingSettings.field === piecePropertyList[index] ? (
@@ -103,72 +95,12 @@ const PieceTable = ({ filteredPieces }) => {
 									)}
 								</div>
 								{item === "Erwerbungsteam" ? (
-									<Form.Group>
-										<Dropdown>
-											<Dropdown.Toggle
-												variant="secondary"
-												id="filter-dropdown"
-												style={{ width: "100%" }}
-											>
-												Filter
-											</Dropdown.Toggle>
-
-											<Dropdown.Menu
-												style={{ padding: "0.5rem 1rem", width: 200 }}
-											>
-												<div className="d-flex flex-column justify-content-between align-items-center mb-2">
-													<Button
-														className="mb-2 w-100"
-														variant="outline-danger"
-														size="sm"
-														onClick={() => {
-															const updatedFilter = filter.map((x) => ({
-																...x,
-																checked: false,
-															}));
-															handleFilterChange(updatedFilter);
-														}}
-													>
-														{" "}
-														Uncheck All
-													</Button>
-													<Button
-														className="w-100"
-														variant="outline-danger"
-														size="sm"
-														onClick={() => {
-															const updatedFilter = filter.map((x) => ({
-																...x,
-																checked: true,
-															}));
-															handleFilterChange(updatedFilter);
-														}}
-													>
-														Check All
-													</Button>
-												</div>
-												<hr className="my-2" />
-
-												{filter.map((f) => (
-													<Form.Check
-														key={f.label}
-														type="checkbox"
-														id={`filter-${f.label}`}
-														label={f.label}
-														checked={f.checked}
-														onChange={() => {
-															const updatedFilter = filter.map((x) =>
-																x.label === f.label
-																	? { ...x, checked: !x.checked }
-																	: x
-															);
-															handleFilterChange(updatedFilter);
-														}}
-													/>
-												))}
-											</Dropdown.Menu>
-										</Dropdown>
-									</Form.Group>
+									<DropdownFilter filterName={"acqUnitName"} />
+								) : (
+									<></>
+								)}
+								{item === "Bestelltyp" ? (
+									<DropdownFilter filterName={"ordertype"} />
 								) : (
 									<></>
 								)}
