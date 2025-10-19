@@ -81,15 +81,19 @@ const filterPieces = (pieces, filters) => {
 
 	return pieces.filter((piece) =>
 		// Piece must satisfy all filter rules
-		Object.entries(filters).every(([key, arr]) => {
+		Object.entries(filters).every(([key, value]) => {
 			const uncheckedLabels = exclusionFilters[key] ?? [];
+
+			// Special case for local_claiming_level
+			if (key === "local_claiming_level") {
+				const numericValue = Number(value);
+				if (isNaN(numericValue) || value.trim() === "") return true; // ignore filter if not a number
+				return piece[key] === numericValue;
+			}
 
 			// ✅ Dynamic text-based filter detection
 			if (typeof filters[key] === "string") {
 				const pieceValue = piece[key]?.toLowerCase?.() ?? "";
-				if (key === "local_claiming_level") {
-					return piece[key] === Number(filters[key]);
-				}
 				return pieceValue.includes(filters[key].toLowerCase());
 			}
 
