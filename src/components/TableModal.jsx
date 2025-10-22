@@ -1,11 +1,13 @@
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import Form from "react-bootstrap/Form";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { usePiecesContext } from "../context/PiecesContext";
 import PieceWarningBox from "./PieceWarningBox";
 
 const TableModal = () => {
+	const [newDate, setNewDate] = useState("");
+	const [newNote, setNewNote] = useState("");
 	const {
 		modalPiece,
 		handleSendEmail,
@@ -16,6 +18,19 @@ const TableModal = () => {
 		pieceChangedWarning,
 	} = usePiecesContext();
 
+	useEffect(() => {
+		if (modalPiece) {
+			let newReclamationDate = new Date();
+			const daysToAdd = modalPiece["claimingInterval"];
+			newReclamationDate.setDate(newReclamationDate.getDate() + daysToAdd);
+			const day = zeroPad(newReclamationDate.getDate());
+			const month = zeroPad(newReclamationDate.getMonth() + 1); // months are 0-based
+			const year = newReclamationDate.getFullYear();
+			setNewDate(modalPiece["newDate"] ?? `${year}-${month}-${day}`);
+			setNewNote(modalPiece["newNote"] ?? modalPiece["externalNote"]);
+		}
+	}, [modalPiece]);
+
 	if (!modalPiece) {
 		return <></>;
 	}
@@ -23,18 +38,6 @@ const TableModal = () => {
 	const zeroPad = (num) => {
 		return String(num).padStart(2, "0");
 	};
-
-	console.log("TableModal.jsx pieceChangedWarning: ", pieceChangedWarning);
-	let newReclamationDate = new Date();
-	const daysToAdd = modalPiece["claimingInterval"];
-	newReclamationDate.setDate(newReclamationDate.getDate() + daysToAdd);
-	const day = zeroPad(newReclamationDate.getDate());
-	const month = zeroPad(newReclamationDate.getMonth() + 1); // months are 0-based
-	const year = newReclamationDate.getFullYear();
-	const [newDate, setNewDate] = useState(`${year}-${month}-${day}`);
-	const [newNote, setNewNote] = useState(
-		modalPiece["newNote"] ?? modalPiece["externalNote"]
-	);
 
 	let tomorrow = new Date();
 	tomorrow.setDate(tomorrow.getDate() + 1);
@@ -134,6 +137,11 @@ const TableModal = () => {
 								type="text"
 								defaultValue={newNote}
 								onChange={({ target }) => setNewNote(target.value)}
+								onKeyDown={(e) => {
+									if (e.key === "Enter") {
+										e.preventDefault();
+									}
+								}}
 							/>
 						</Form.Group>
 					</Form>
@@ -142,6 +150,11 @@ const TableModal = () => {
 					<Button
 						variant="primary"
 						onClick={() => handleTogglePieceFlag(modalPiece, false)}
+						onKeyDown={(e) => {
+							if (e.key === "Enter") {
+								e.preventDefault();
+							}
+						}}
 					>
 						Abbrechen
 					</Button>
