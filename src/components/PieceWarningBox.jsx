@@ -5,8 +5,7 @@ const PieceWarningBox = ({ pieceChangedWarning }) => {
 	let message = "Waiting for updates on the piece...";
 
 	if (pieceChangedWarning === false) {
-		variant = "success";
-		message = "The piece has NOT been changed since your login.";
+		return <></>;
 	} else if (pieceChangedWarning === true) {
 		variant = "danger";
 		message =

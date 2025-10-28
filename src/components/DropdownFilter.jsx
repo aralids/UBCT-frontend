@@ -30,7 +30,11 @@ const DropdownFilter = ({ filterName }) => {
 		<Form.Group>
 			<Dropdown>
 				<Dropdown.Toggle
-					variant="secondary"
+					variant={
+						currentFilterList.filter((item) => !item.checked).length === 0
+							? "secondary"
+							: "primary"
+					}
 					id={`filter-dropdown-${filterName}`}
 					style={{ width: "100%" }}
 				>

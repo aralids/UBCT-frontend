@@ -19,7 +19,7 @@ const TextInputFilter = ({ filterName }) => {
 		<Form.Group>
 			<Dropdown>
 				<Dropdown.Toggle
-					variant="secondary"
+					variant={inputValue.length === 0 ? "secondary" : "primary"}
 					id={`filter-dropdown-${filterName}`}
 					style={{ width: "100%" }}
 				>
